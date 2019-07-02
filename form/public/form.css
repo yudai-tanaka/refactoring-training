@@ -1,0 +1,13 @@
+input + .help, textarea + .help {
+  display: none;
+}
+input.is-danger + .help, textarea.is-danger + .help {
+  display: block;
+}
+
+.field-option {
+  display: none;
+}
+.field-option.is-open {
+  display: block;
+}
