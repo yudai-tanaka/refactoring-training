@@ -4,7 +4,7 @@
       <label class="label">職業</label>
       <div class="control">
         <div class="select">
-          <select name="job" id="js-job">
+          <select @change="clearJobName" v-model="job" name="job" id="js-job">
             <option>会社員</option>
             <option>自営業</option>
             <option>公務員</option>
@@ -15,12 +15,35 @@
       </div>
     </div>
 
-    <div class="field field-option" id="js-job-name">
+    <div v-if="job == 'その他'" class="field field-option" id="js-job-name">
       <label class="label">職業名</label>
       <div class="control">
-        <input class="input" type="text" name="job-name">
-        <p class="help is-danger">職業名を入力してください</p>
+        <input v-model="jobName" class="input" type="text" name="job-name">
+        <p v-if="!valid" class="help is-danger">職業名を入力してください</p>
       </div>
     </div>
   </div>
 </template>
+
+<script>
+export default {
+  data: function() {
+     return {
+       job: '会社員',
+       jobName: '',
+     }
+  },
+  methods: {
+    clearJobName: function() {
+      if (this.job != 'その他') {
+        this.jobName = ''
+      }
+    }
+  },
+  computed: {
+    valid: function() {
+      return this.job != 'その他' || this.jobName
+    }
+  }
+}
+</script>

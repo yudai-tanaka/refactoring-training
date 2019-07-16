@@ -2,22 +2,12 @@
 <div class="container">
   <form novalidate id="js-form" @submit.prevent="submit" method="post" ref="form">
 
-    <name-field v-model="name"></name-field>
-    <age-field></age-field>
-    <sex-field></sex-field>
-    <job-field></job-field>
-    <contact-us-field></contact-us-field>
-
-
-
-    <div class="field">
-      <div class="control">
-        <label class="checkbox">
-          規約に同意する <input type="checkbox" name="agreement" required>
-          <p class="help is-danger">規約に同意してください</p>
-        </label>
-      </div>
-    </div>
+    <name-field ref="name"></name-field>
+    <age-field ref="age"></age-field>
+    <sex-field ref="sex"></sex-field>
+    <job-field ref="job"></job-field>
+    <contact-us-field ref="contactUs"></contact-us-field>
+    <agree-field ref="agree"></agree-field>
 
     <div class="field">
       <div class="control">
@@ -34,6 +24,10 @@ import ContactUsField from './components/ContactUsField.vue'
 import NameField from './components/NameField.vue'
 import JobField from './components/JobField.vue'
 import SexField from './components/SexField.vue'
+import AgreeField from './components/AgreeField.vue'
+import axios from 'axios'
+
+const POST_URL = 'http://localhost:3000/messages'
 
 export default {
   name: 'app',
@@ -42,7 +36,8 @@ export default {
     AgeField,
     SexField,
     JobField,
-    ContactUsField
+    ContactUsField,
+    AgreeField
   },
   data: function() { 
     return {
@@ -50,18 +45,25 @@ export default {
     }
   },
   methods: {
-    submit: function(e) {
-      // eslint-disable-next-line no-console
-      console.log(this.name)
-      // eslint-disable-next-line no-console
-      console.log(e)
-
-      var data = {};
-      new FormData(this.$refs.form).forEach((value, key) => {
-        data[key] = value;
-       });
-      // eslint-disable-next-line no-console
-      console.log(data)
+    submit: async function() {
+      let validities = [
+        this.$refs.name.valid,
+        this.$refs.age.valid,
+        // valid無いので除外。インターフェース合わせて入れる？
+        //this.$refs.age,
+        this.$refs.job.valid,
+        this.$refs.contactUs.valid,
+        this.$refs.agree.valid
+      ]
+      if (validities.every(e => e == true)) {
+        var data = {};
+        new FormData(this.$refs.form).forEach((value, key) => {
+          data[key] = value;
+        });
+        const res = await axios.post(POST_URL, data)
+        // eslint-disable-next-line no-console
+        console.log(res)
+      }
     }
   }
 }
