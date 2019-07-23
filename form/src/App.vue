@@ -1,21 +1,26 @@
 <template>
-<div class="container">
-  <form novalidate id="js-form" @submit.prevent="submit" method="post" ref="form">
+  <div class="container">
+    <form
+      novalidate
+      id="js-form"
+      @submit.prevent="submit"
+      method="post"
+      ref="form"
+    >
+      <name-field ref="name"></name-field>
+      <age-field ref="age"></age-field>
+      <sex-field ref="sex"></sex-field>
+      <job-field ref="job"></job-field>
+      <contact-us-field ref="contactUs"></contact-us-field>
+      <agree-field ref="agree"></agree-field>
 
-    <name-field ref="name"></name-field>
-    <age-field ref="age"></age-field>
-    <sex-field ref="sex"></sex-field>
-    <job-field ref="job"></job-field>
-    <contact-us-field ref="contactUs"></contact-us-field>
-    <agree-field ref="agree"></agree-field>
-
-    <div class="field">
-      <div class="control">
-        <button type="submit" class="button is-link">送信</button>
+      <div class="field">
+        <div class="control">
+          <button type="submit" class="button is-link">送信</button>
+        </div>
       </div>
-    </div>
-  </form>
-</div>
+    </form>
+  </div>
 </template>
 
 <script>
@@ -39,31 +44,44 @@ export default {
     ContactUsField,
     AgreeField
   },
-  data: function() { 
+  data: function() {
     return {
       name: null
     }
   },
   methods: {
     submit: async function() {
+      this.callValidates()
       let validities = [
-        this.$refs.name.valid,
-        this.$refs.age.valid,
-        // valid無いので除外。インターフェース合わせて入れる？
-        //this.$refs.age,
-        this.$refs.job.valid,
-        this.$refs.contactUs.valid,
-        this.$refs.agree.valid
+        !this.$refs.name.invalid,
+        !this.$refs.age.invalid,
+        // sexはinvalidにならない
+        !this.$refs.job.invalid,
+        !this.$refs.contactUs.invalid,
+        !this.$refs.agree.invalid
       ]
       if (validities.every(e => e == true)) {
-        var data = {};
+        var data = {}
         new FormData(this.$refs.form).forEach((value, key) => {
-          data[key] = value;
-        });
-        const res = await axios.post(POST_URL, data)
-        // eslint-disable-next-line no-console
-        console.log(res)
+          data[key] = value
+        })
+        await axios.post(POST_URL, data)
+        alert('送信しました')
+      } else {
+        alert('入力エラーがあります')
       }
+    },
+    callValidates() {
+      const children = [
+        this.$refs.name,
+        this.$refs.age,
+        this.$refs.job,
+        this.$refs.contactUs,
+        this.$refs.agree
+      ]
+      children.forEach(child => {
+        child.input()
+      })
     }
   }
 }

@@ -18,8 +18,15 @@
     <div v-if="job == 'その他'" class="field field-option" id="js-job-name">
       <label class="label">職業名</label>
       <div class="control">
-        <input v-model="jobName" class="input" type="text" name="job-name">
-        <p v-if="!valid" class="help is-danger">職業名を入力してください</p>
+        <input
+          v-model="jobName"
+          class="input"
+          :class="{ 'is-danger': invalid }"
+          type="text"
+          name="job-name"
+          @input="input"
+        />
+        <p v-if="invalid" class="help is-danger">職業名を入力してください</p>
       </div>
     </div>
   </div>
@@ -28,21 +35,20 @@
 <script>
 export default {
   data: function() {
-     return {
-       job: '会社員',
-       jobName: '',
-     }
+    return {
+      job: '会社員',
+      jobName: '',
+      invalid: false
+    }
   },
   methods: {
     clearJobName: function() {
       if (this.job != 'その他') {
         this.jobName = ''
       }
-    }
-  },
-  computed: {
-    valid: function() {
-      return this.job != 'その他' || this.jobName
+    },
+    input() {
+      this.invalid = this.job == 'その他' && !this.jobName
     }
   }
 }
